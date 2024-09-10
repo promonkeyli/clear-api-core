@@ -1,0 +1,9 @@
+{{ range .api }}
+import * as {{.controllerName}} from "./{{.fileName}}"
+{{ end }}
+
+export default {
+{{ range .api }}
+   {{.controllerName}}
+{{ end }}
+}
