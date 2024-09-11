@@ -14,6 +14,7 @@ func RenderTpl(c public.TplConfig) {
 		fmt.Println("Error parsing template:", err)
 	}
 	// 2. 创建输出文件
+	fmt.Println("[path]", c.OutFileName)
 	outputFile, err2 := os.Create(c.OutFileName)
 	if err2 != nil {
 		fmt.Println("Error creating output file:", err)
