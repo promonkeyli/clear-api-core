@@ -24,6 +24,6 @@ func GenerateAPIFiles(config public.GenFilesConfig) {
 		}
 	} else {
 		// 文件夹不存在，则生成，多个前端接口文件，一个类型文件，一个index.ts总导出文件
-		CreateApiMain()
+		CreateApiMain(config.OpenAPI)
 	}
 }

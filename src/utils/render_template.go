@@ -8,7 +8,6 @@ import (
 )
 
 func RenderTpl(c public.TplConfig) {
-	fmt.Println(c.TplPath)
 	// 1. 解析模版文件
 	tpl, err := template.ParseFiles(c.TplPath)
 	if err != nil {
@@ -21,7 +20,7 @@ func RenderTpl(c public.TplConfig) {
 	}
 	defer outputFile.Close()
 	// 3. 应用模板并将结果写入文件
-	err = tpl.ExecuteTemplate(outputFile, c.TplPath, c.TplData)
+	err = tpl.ExecuteTemplate(outputFile, c.TplName, c.TplData)
 	if err != nil {
 		fmt.Println("Error executing template:", err)
 	}

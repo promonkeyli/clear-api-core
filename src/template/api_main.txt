@@ -1,0 +1,5 @@
+{{ range .}} import * as {{.ControllerName}} from "./{{.FileName}}";
+{{ end }}
+export default {
+{{range .}} {{.ControllerName}},
+{{end}}}
