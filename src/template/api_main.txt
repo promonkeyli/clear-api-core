@@ -1,4 +1,4 @@
-{{ range .}} import * as {{.ControllerName}} from "./{{.FileName}}";
+{{ range .}} import * as {{.ControllerName}} from "./{{.FileName}}.js";
 {{ end }}
 export default {
 {{range .}} {{.ControllerName}},

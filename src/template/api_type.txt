@@ -1,5 +1,12 @@
 declare namespace API {
    {{range .}}
-   12
+   type {{ .Name }} = {
+   {{if .Name}}
+      {{ range .Properties }}
+         /** {{.Description}} */
+         {{.Name}}?: {{.Type}}
+      {{ end }}
+   {{end}}
+   }
    {{end}}
 }
