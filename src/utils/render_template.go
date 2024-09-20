@@ -19,7 +19,7 @@ func RenderTpl(c public.TplConfig) {
 		fmt.Println("Error creating output file:", err)
 	}
 	defer outputFile.Close()
-	// 3. 应用模板并将结果写入文件
+	// 4. 应用模板并将结果写入文件
 	err = tpl.ExecuteTemplate(outputFile, c.TplName, c.TplData)
 	if err != nil {
 		fmt.Println("Error executing template:", err)

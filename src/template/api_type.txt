@@ -1,12 +1,21 @@
 declare namespace API {
-   {{range .}}
-   type {{ .Name }} = {
-   {{if .Name}}
-      {{ range .Properties }}
-         /** {{.Description}} */
-         {{.Name}}?: {{.Type}}
-      {{ end }}
-   {{end}}
-   }
-   {{end}}
+   {{- range $index, $value := . }}
+   {{- if eq (len .Enum) 0 }}
+    type {{ .Name }} = {
+           {{- range .Properties }}
+           {{- if .Description }}
+           /** {{ .Description }} */
+           {{- end }}
+           {{ .Name }}?: {{ .Type }};
+           {{- end }}
+    }
+   {{- else }}
+   type {{ .Name }} = {{ range $i,$v := .Enum }}
+                      {{- $v }}
+                      {{- if lt $i $value.EnumLastIndex }}
+                      {{- " | " }}
+                      {{- end }}
+                      {{- end }};
+   {{- end }}
+   {{- end }}
 }
