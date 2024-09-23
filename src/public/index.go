@@ -2,13 +2,14 @@ package public
 
 type ApiConfig struct {
 	DocUrl         string
-	RequestLibPath string
 	OutDir         string
+	RequestLibPath string
 }
 
 type GenFilesConfig struct {
-	OpenAPI string
-	OutDir  string
+	OpenAPI        string
+	OutDir         string
+	RequestLibPath string
 }
 
 type TplConfig struct {

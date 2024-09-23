@@ -12,8 +12,9 @@ func GenerateAPI(config public.ApiConfig) {
 	openAPI, _ := utils.ConvertAPIDoc(swagger)
 	// 3. 分析openAPI JSON数据格式，生成对应的文件
 	genFilesConfig := public.GenFilesConfig{
-		OutDir:  config.OutDir,
-		OpenAPI: openAPI,
+		OutDir:         config.OutDir,
+		OpenAPI:        openAPI,
+		RequestLibPath: config.RequestLibPath,
 	}
 	utils.GenerateAPIFiles(genFilesConfig)
 }

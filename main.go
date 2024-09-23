@@ -10,7 +10,7 @@ func main() {
 	docUrl := "https://petstore.swagger.io/v2/swagger.json"
 	config := public.ApiConfig{
 		DocUrl:         docUrl,
-		RequestLibPath: "",
+		RequestLibPath: "import request from '@/utils/http;' ",
 		OutDir:         "",
 	}
 	lib.GenerateAPI(config)

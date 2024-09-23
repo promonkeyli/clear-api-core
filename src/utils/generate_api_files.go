@@ -39,5 +39,5 @@ func GenerateAPIFiles(config public.GenFilesConfig) {
 	// 5. 创建一个typings.d.ts文件
 	CreateApiType(openAPI, path)
 	// 6. 创建多个接口文件
-	CreateApiFiles(openAPI, path)
+	CreateApiFiles(openAPI, path, config.RequestLibPath)
 }

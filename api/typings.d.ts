@@ -1,22 +1,44 @@
 declare namespace API {
-    type Response = {
-           /** 响应码 */
-           code?:StatusCode;
-           /** 响应数据(可以为空) */
-           data?:any;
-           /** 响应描述 */
+    type ApiResponse = {
+           code?:number;
            message?:string;
-           /** 响应时间戳 */
-           time?:number;
+           type?:string;
     }
-   type StatusCode = 200 | 400 | 401 | 403 | 404 | 500 | 501 | 502 | 503;
-    type Tool = {
-           category?:string;
+    type Category = {
            name?:string;
-           url?:string;
+           id?:number;
+    }
+    type Order = {
+           complete?:boolean;
+           id?:number;
+           petId?:number;
+           quantity?:number;
+           shipDate?:string;
+           /** Order Status */
+           status?:string;
+    }
+    type Pet = {
+           category?:Category;
+           id?:number;
+           name:string;
+           photoUrls:Array<string>;
+           /** pet status in the store */
+           status?:string;
+           tags?:Array<Tag>;
+    }
+    type Tag = {
+           id?:number;
+           name?:string;
     }
     type User = {
+           lastName?:string;
            password?:string;
+           phone?:string;
+           /** User Status */
+           userStatus?:number;
            username?:string;
+           email?:string;
+           firstName?:string;
+           id?:number;
     }
 }
