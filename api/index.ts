@@ -1,9 +1,7 @@
- import * as pet from "./pet.js";
- import * as store from "./store.js";
  import * as user from "./user.js";
+ import * as tool from "./tool.js";
 
 export default {
- pet,
- store,
  user,
+ tool,
 }

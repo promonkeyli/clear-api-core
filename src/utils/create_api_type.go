@@ -18,6 +18,7 @@ type Property struct {
 	Name        string
 	Description string
 	Type        string
+	Required    bool
 }
 
 func CreateApiType(o openapi3.T, outDir string) {
@@ -36,54 +37,59 @@ func CreateApiType(o openapi3.T, outDir string) {
 		typeArr := *schema.Type
 		enumArr := schema.Enum          // 枚举
 		properties := schema.Properties // 该类型的一些属性
+		requiredArr := schema.Required  // 哪些字段必传
 
 		var propertyArr []Property
 		for pName, pSchemaRef := range properties {
-			if pSchemaRef.Value == nil {
-				// 这里可能复用已有类型
-				refLink := pSchemaRef.Ref
-				if refLink != "" {
-					// 解析引用对应的对象
-
-				}
-			} else {
-
-			}
-			pSchema := *pSchemaRef.Value
-			var pTypeArr []string
-			if pSchema.Type == nil {
-				// 字段没有类型，又可能是 扩展类型，需要从allOf中取类型名称
-				if len(pSchema.AllOf) > 0 {
-					// allOf ref 示例：#/components/schemas/utils.StatusCode
-					ref := pSchema.AllOf[0].Ref
-					refTypeStrings := strings.Split(ref, "/")
-					refTypeString := refTypeStrings[len(refTypeStrings)-1]
-					// 此处需要判断string中是否包含. 包含的话 要分割后取最后一个作为类型名称
-					var t string
-					if strings.Contains(refTypeString, ".") {
-						t = strings.Split(refTypeString, ".")[1]
-					} else {
-						t = refTypeString
-					}
-					pTypeArr = append(pTypeArr, t)
-				} else {
-					pTypeArr = []string{}
-				}
-			} else {
-				pTypeArr = *pSchema.Type
-			}
-
+			var description string
 			var pType string
-			if len(pTypeArr) > 0 {
-				pType = pTypeArr[0]
+
+			// 这里可能复用已有类型
+			refLink := pSchemaRef.Ref
+			if refLink != "" {
+				// 解析引用对应的对象，分割后取最后一个值，就是对应的自定义类型
+				refTypeStringArr := strings.Split(refLink, "/")
+				refTypeString := refTypeStringArr[len(refTypeStringArr)-1]
+				pType = refTypeString
 			} else {
-				pType = ""
+				pSchema := *pSchemaRef.Value
+				description = pSchema.Description
+				var pTypeArr []string
+				if pSchema.Type == nil {
+					// 字段没有类型，又可能是 扩展类型，需要从allOf中取类型名称
+					if len(pSchema.AllOf) > 0 {
+						// allOf ref 示例：#/components/schemas/utils.StatusCode
+						ref := pSchema.AllOf[0].Ref
+						refTypeStrings := strings.Split(ref, "/")
+						refTypeString := refTypeStrings[len(refTypeStrings)-1]
+						// 此处需要判断string中是否包含. 包含的话 要分割后取最后一个作为类型名称
+						var t string
+						if strings.Contains(refTypeString, ".") {
+							t = strings.Split(refTypeString, ".")[1]
+						} else {
+							t = refTypeString
+						}
+						pTypeArr = append(pTypeArr, t)
+					} else {
+						pTypeArr = []string{}
+					}
+				} else {
+					pTypeArr = *pSchema.Type
+				}
+				if len(pTypeArr) > 0 {
+					// 这里的类型需要做一下转换，转成js语言中的类型
+					pType = handlerType(pTypeArr[0], pSchema)
+				} else {
+					pType = "any"
+				}
 			}
+
+			// 处理 是否是必须输入的选项
 			propertyArrItem := Property{
 				Name:        pName,
-				Description: pSchema.Description,
-				// 这里的类型需要做一下转换，转成js语言中的类型
-				Type: handlerType(pType),
+				Description: description,
+				Type:        pType,
+				Required:    includeName(pName, requiredArr),
 			}
 			propertyArr = append(propertyArr, propertyArrItem)
 		}
@@ -91,7 +97,7 @@ func CreateApiType(o openapi3.T, outDir string) {
 		TplDataItem := ApiTypeData{
 			Name:          name,
 			Description:   schema.Description,
-			Type:          handlerType(typeArr[0]),
+			Type:          changeType(typeArr[0]),
 			Properties:    propertyArr,
 			Enum:          enumArr,
 			EnumLastIndex: len(enumArr) - 1,
@@ -108,7 +114,19 @@ func CreateApiType(o openapi3.T, outDir string) {
 	RenderTpl(api)
 }
 
-func handlerType(t string) string {
+func handlerType(t string, s openapi3.Schema) string {
+	if t == "array" {
+		// 如果openAPI的类型是数组的话，那么首先需要看items中ref存不存在，存在则引用该类型值，不存在则取type对应的类型
+		var itemsType string
+		if s.Items.Ref != "" {
+			itemsTypeStringArr := strings.Split(s.Items.Ref, "/")
+			itemsType = itemsTypeStringArr[len(itemsTypeStringArr)-1]
+		} else {
+			vt := *s.Items.Value.Type
+			itemsType = vt[0]
+		}
+		return "Array<" + itemsType + ">"
+	}
 	if t == "integer" {
 		return "number"
 	}
@@ -116,4 +134,23 @@ func handlerType(t string) string {
 		return "any"
 	}
 	return t
+}
+
+func changeType(t string) string {
+	if t == "integer" {
+		return "number"
+	}
+	if t == "" {
+		return "any"
+	}
+	return t
+}
+
+func includeName(target string, arr []string) bool {
+	for _, v := range arr {
+		if v == target {
+			return true
+		}
+	}
+	return false
 }

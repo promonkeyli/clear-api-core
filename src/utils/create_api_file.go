@@ -10,7 +10,7 @@ type ApiFileData struct {
 	FileName       string
 }
 
-func CreateApiFiles(o *openapi3.T, outDir string) {
+func CreateApiFiles(o openapi3.T, outDir string) {
 	// 处理 openAPI数据, 数组长度不固定，使用切片动态扩容
 	var data []ApiMainData
 	for _, tag := range o.Tags {

@@ -6,7 +6,9 @@ declare namespace API {
            {{- if .Description }}
            /** {{ .Description }} */
            {{- end }}
-           {{ .Name }}?: {{ .Type }};
+           {{ .Name }}
+           {{- if eq .Required true -}}:{{- else }}?:{{- end -}}
+           {{ .Type }};
            {{- end }}
     }
    {{- else }}
