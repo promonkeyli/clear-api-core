@@ -1,1 +1,31 @@
 {{ .RequestLibPath }}
+
+{{ range .ServiceData }}
+{{- if ne .Description "" }}
+/** {{ .Description }} */
+{{- end }}
+export async function {{ .FuncName }}(
+{{- if eq .ParamsInPath true }} params: {{ .ParamsType }},
+{{- end -}}
+{{- if eq .TransferBody true }} body: {{ .TransferBodyType }},
+{{- end -}}
+options?: { [key: string]: any}){
+  return request<any>(
+       {{- if eq .ParamsInPath true -}}
+       `{{ .Url }}`
+        {{- else -}}
+        '{{ .Url }}'
+        {{- end -}}, {
+       method: '{{ .Method }}',
+       {{- if ne .MediaType "" }}
+       header: {
+         'Content-Type': '{{ .MediaType }}'
+       },
+       {{- end }}
+       {{- if eq .TransferBody true }}
+       body,
+       {{- end }}
+       ...(options || {})
+  })
+}
+{{ end }}
