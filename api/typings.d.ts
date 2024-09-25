@@ -1,44 +1,22 @@
 declare namespace API {
-    type Pet = {
-           id?:number;
-           name:string;
-           photoUrls:Array<string>;
-           /** pet status in the store */
-           status?:string;
-           tags?:Array<Tag>;
-           category?:Category;
-    }
-    type Tag = {
-           id?:number;
+    type Tool = {
            name?:string;
+           url?:string;
+           category?:string;
     }
     type User = {
-           username?:string;
-           email?:string;
-           firstName?:string;
-           id?:number;
-           lastName?:string;
            password?:string;
-           phone?:string;
-           /** User Status */
-           userStatus?:number;
+           username?:string;
     }
-    type ApiResponse = {
+    type Response = {
+           /** 响应时间戳 */
+           time?:number;
+           /** 响应码 */
+           code?:StatusCode;
+           /** 响应数据(可以为空) */
+           data?:any;
+           /** 响应描述 */
            message?:string;
-           type?:string;
-           code?:number;
     }
-    type Category = {
-           name?:string;
-           id?:number;
-    }
-    type Order = {
-           /** Order Status */
-           status?:string;
-           complete?:boolean;
-           id?:number;
-           petId?:number;
-           quantity?:number;
-           shipDate?:string;
-    }
+   type StatusCode = 200 | 400 | 401 | 403 | 404 | 500 | 501 | 502 | 503;
 }

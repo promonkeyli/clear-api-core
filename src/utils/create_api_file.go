@@ -2,6 +2,7 @@ package utils
 
 import (
 	"example.com/m/v2/src/public"
+	"fmt"
 	"github.com/getkin/kin-openapi/openapi3"
 	"strings"
 )
@@ -21,10 +22,19 @@ type ApiServiceData struct {
 	TransferBodyType string
 	// Header Media Type
 	MediaType string
-	// url中是否有params参数
+	// url path 中是否有params参数
 	ParamsInPath bool
-	// params 参数类型
-	ParamsType string
+	// url中是否有query params参数
+	ParamsInQuery bool
+	// params 数据、包含 in path
+	ParamsInPathArr []Param
+	// params 数据、包含 in query
+	ParamsInQueryArr []Param
+}
+type Param struct {
+	Name     string
+	Type     string
+	Required bool
 }
 type ApiFileData struct {
 	ControllerName string
@@ -69,6 +79,11 @@ func handleApiServiceData(operations []OperationByTag, o openapi3.T) []ApiServic
 	for _, operation := range operations {
 		operationObj := operation.Operation
 
+		// 函数名
+		var funcName = generateFuncName(operation)
+
+		fmt.Println(funcName)
+
 		// 请求体
 		var TransferBody bool
 		var TransferBodyType string
@@ -102,36 +117,53 @@ func handleApiServiceData(operations []OperationByTag, o openapi3.T) []ApiServic
 
 		// 请求参数 处理
 		var ParamsInPath = false
+		var ParamsInQuery = false
 		var params = operationObj.Parameters
-		var ParamsType = "any"
+		var ParamsInPathArr []Param
+		var ParamsInQueryArr []Param
 
 		if len(params) > 0 {
 			for _, param := range params {
 				// 如果遍历参数里面有path的参数存在，那就表明需要params参数存在，在前端request库，会自动拼接到url中
 				if param.Value.In == "path" {
 					ParamsInPath = true
+					// param name
+					paramName := param.Value.Name
+					paramRequired := param.Value.Required
+					paramType := generateTypeScriptType(param.Value.Schema.Value)
+					ParamsInPathArr = append(ParamsInPathArr, Param{
+						Name:     paramName,
+						Type:     paramType,
+						Required: paramRequired,
+					})
 				}
-
-				pTypeSchema := param.Value.Schema
-				if pTypeSchema.Ref != "" {
-					ParamsType = pTypeSchema.Ref
-				} else {
-					ParamsType = generateTypeScriptType(param.Value.Schema.Value)
+				if param.Value.In == "query" {
+					ParamsInQuery = true
+					// param name
+					paramName := param.Value.Name
+					paramRequired := param.Value.Required
+					paramType := generateTypeScriptType(param.Value.Schema.Value)
+					ParamsInQueryArr = append(ParamsInQueryArr, Param{
+						Name:     paramName,
+						Type:     paramType,
+						Required: paramRequired,
+					})
 				}
-
 			}
 		}
 
 		serviceData = append(serviceData, ApiServiceData{
 			Description:      operationObj.Description, // 方法描述
-			FuncName:         operationObj.OperationID, // 客户端函数名称
+			FuncName:         funcName,                 // 客户端函数名称
 			Url:              pathUrl,                  // 请求url
 			Method:           operation.MethodName,     // 请求方法
 			TransferBody:     TransferBody,             // 请求体
 			MediaType:        MediaType,                // content-type
 			TransferBodyType: TransferBodyType,         // body 类型
 			ParamsInPath:     ParamsInPath,             // Url中是否有请求参数
-			ParamsType:       ParamsType,               // params 类型
+			ParamsInPathArr:  ParamsInPathArr,          // params 参数数组
+			ParamsInQuery:    ParamsInQuery,            // url 中是否有查询参数
+			ParamsInQueryArr: ParamsInQueryArr,         // url查询参数 数组
 		})
 	}
 	return serviceData

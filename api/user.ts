@@ -1,8 +1,8 @@
 import request from '@/utils/http;' 
 
-
-export async function createUsersWithListInput( body: Array<unknown>,options?: { [key: string]: any}){
-  return request<any>('/user/createWithList', {
+/** 使用用户名密码进行登录 */
+export async function PostLogin( body: API.model.User, options?: { [key: string]: any}){
+  return request<any>('/login', {
        method: 'POST',
        header: {
          'Content-Type': 'application/json'
@@ -12,66 +12,30 @@ export async function createUsersWithListInput( body: Array<unknown>,options?: {
   })
 }
 
-/** This can only be done by the logged in user. */
-export async function createUser( body: API.User,options?: { [key: string]: any}){
-  return request<any>('/user', {
+/** 用户注销，清除会话、注销令牌 */
+export async function PostLogout(options?: { [key: string]: any}){
+  return request<any>('/logout', {
+       method: 'POST',
+       ...(options || {})
+  })
+}
+
+/** 获取所有用户 */
+export async function GetUsers(options?: { [key: string]: any}){
+  return request<any>('/users', {
+       method: 'GET',
+       ...(options || {})
+  })
+}
+
+/** 新增用户 */
+export async function PostUsers( body: API.model.User, options?: { [key: string]: any}){
+  return request<any>('/users', {
        method: 'POST',
        header: {
          'Content-Type': 'application/json'
        },
        body,
-       ...(options || {})
-  })
-}
-
-export async function logoutUser(options?: { [key: string]: any}){
-  return request<any>('/user/logout', {
-       method: 'GET',
-       ...(options || {})
-  })
-}
-
-export async function loginUser(options?: { [key: string]: any}){
-  return request<any>('/user/login', {
-       method: 'GET',
-       ...(options || {})
-  })
-}
-
-export async function createUsersWithArrayInput( body: Array<unknown>,options?: { [key: string]: any}){
-  return request<any>('/user/createWithArray', {
-       method: 'POST',
-       header: {
-         'Content-Type': 'application/json'
-       },
-       body,
-       ...(options || {})
-  })
-}
-
-export async function getUserByName( params: string,options?: { [key: string]: any}){
-  return request<any>(`/user/${username}`, {
-       method: 'GET',
-       ...(options || {})
-  })
-}
-
-/** This can only be done by the logged in user. */
-export async function updateUser( params: string, body: API.User,options?: { [key: string]: any}){
-  return request<any>(`/user/${username}`, {
-       method: 'PUT',
-       header: {
-         'Content-Type': 'application/json'
-       },
-       body,
-       ...(options || {})
-  })
-}
-
-/** This can only be done by the logged in user. */
-export async function deleteUser( params: string,options?: { [key: string]: any}){
-  return request<any>(`/user/${username}`, {
-       method: 'DELETE',
        ...(options || {})
   })
 }

@@ -77,3 +77,23 @@ func replacePathTpl(path string) string {
 	// 替换占位符格式
 	return strings.ReplaceAll(path, "{", "${")
 }
+
+func generateFuncName(o OperationByTag) string {
+	operation := o.Operation
+	path := o.Path
+	methodName := o.MethodName
+	if operation.OperationID != "" {
+		return operation.OperationID
+	} else {
+		// 服务端没有定义客户端函数名称的话，需要依据method 以及 path url来生成函数名称, 驼峰命名
+		pathString := strings.ReplaceAll(path, "{", "")
+		pathString = strings.ReplaceAll(pathString, "}", "")
+		// 方法单词全转小写
+		nameString := strings.ToLower(methodName) + pathString
+		words := strings.Split(nameString, "/")
+		for i, _ := range words {
+			words[i] = strings.Title(strings.TrimSpace(words[i]))
+		}
+		return strings.Join(words, "")
+	}
+}

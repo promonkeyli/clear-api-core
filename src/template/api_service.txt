@@ -1,15 +1,25 @@
 {{ .RequestLibPath }}
-
 {{ range .ServiceData }}
 {{- if ne .Description "" }}
 /** {{ .Description }} */
 {{- end }}
 export async function {{ .FuncName }}(
-{{- if eq .ParamsInPath true }} params: {{ .ParamsType }},
+{{- if or .ParamsInPath .ParamsInQuery }} params: {
+{{- range .ParamsInPathArr }}
+   {{ .Name }}{{ if ne .Required true }}? {{ end }} :{{ .Type }};
+{{- end }}
+{{- range .ParamsInQueryArr }}
+   {{ .Name }}{{ if ne .Required true }}? {{ end }} :{{ .Type }};
+{{- end }}
+},
 {{- end -}}
-{{- if eq .TransferBody true }} body: {{ .TransferBodyType }},
-{{- end -}}
+{{- if eq .TransferBody true }} body: {{ .TransferBodyType }}, {{ end -}}
 options?: { [key: string]: any}){
+  {{- if eq .ParamsInPath true }}
+  const { {{ range .ParamsInPathArr }}{{ .Name }},{{ end }}
+          {{- if eq .ParamsInQuery true }} ...queryParams {{ end -}}
+   } = params
+  {{- end }}
   return request<any>(
        {{- if eq .ParamsInPath true -}}
        `{{ .Url }}`
@@ -21,6 +31,13 @@ options?: { [key: string]: any}){
        header: {
          'Content-Type': '{{ .MediaType }}'
        },
+       {{- end }}
+       {{- if eq .ParamsInQuery  true }}
+       {{- if eq .ParamsInPath true }}
+       params: { ...queryParams },
+       {{- else }}
+       params,
+       {{- end }}
        {{- end }}
        {{- if eq .TransferBody true }}
        body,

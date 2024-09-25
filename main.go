@@ -6,8 +6,8 @@ import (
 )
 
 func main() {
-	//docUrl := "https://promonkeyli.top:8080/swagger/doc.json"
-	docUrl := "https://petstore.swagger.io/v2/swagger.json"
+	docUrl := "https://promonkeyli.top:8080/swagger/doc.json"
+	//docUrl := "https://petstore.swagger.io/v2/swagger.json"
 	config := public.ApiConfig{
 		DocUrl:         docUrl,
 		RequestLibPath: "import request from '@/utils/http;' ",
