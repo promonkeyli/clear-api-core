@@ -2,7 +2,6 @@ package utils
 
 import (
 	"example.com/m/v2/src/public"
-	"fmt"
 	"github.com/getkin/kin-openapi/openapi3"
 	"strings"
 )
@@ -57,7 +56,6 @@ func CreateApiFiles(o openapi3.T, outDir string, requestLibPath string) {
 			ServiceData:    handleApiServiceData(operations[tag.Name], o),
 		})
 	}
-	// 组织数据
 
 	// 多个接口文件，需要循环生成
 	for _, item := range data {
@@ -70,7 +68,8 @@ func CreateApiFiles(o openapi3.T, outDir string, requestLibPath string) {
 		}
 		RenderTpl(api)
 	}
-
+	// openAPI 类型 文件转换记录
+	Log("openAPI 接口文件渲染完成", Green)
 }
 
 // 处理ts service生成-函数
@@ -81,8 +80,6 @@ func handleApiServiceData(operations []OperationByTag, o openapi3.T) []ApiServic
 
 		// 函数名
 		var funcName = generateFuncName(operation)
-
-		fmt.Println(funcName)
 
 		// 请求体
 		var TransferBody bool

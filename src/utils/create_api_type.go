@@ -112,6 +112,8 @@ func CreateApiType(o openapi3.T, outDir string) {
 		OutFileName: outDir + "/typings.d.ts",
 	}
 	RenderTpl(api)
+	// openAPI 类型 文件转换记录
+	Log("openAPI 类型主文件渲染完成", Green)
 }
 
 func handlerType(t string, s openapi3.Schema) string {

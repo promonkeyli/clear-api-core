@@ -33,7 +33,7 @@ func GenerateAPIFiles(config public.GenFilesConfig) {
 		return
 	}
 	// 3. 创建 api文件夹，如果不存在，则生成
-	os.Mkdir(path, 0777)
+	os.MkdirAll(path, 0777)
 	// 4. 创建一个index.ts总导出文件
 	CreateApiMain(openAPI, path)
 	// 5. 创建一个typings.d.ts文件

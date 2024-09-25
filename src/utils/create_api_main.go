@@ -27,4 +27,6 @@ func CreateApiMain(o openapi3.T, outDir string) {
 		OutFileName: outDir + "/index.ts",
 	}
 	RenderTpl(api)
+	// openAPI index.ts文件转换记录
+	Log("openAPI index.ts 主文件渲染完成", Green)
 }
